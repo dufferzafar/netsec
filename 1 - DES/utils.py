@@ -97,6 +97,11 @@ def permute(inp, perm):
     return [inp[p - 1] for p in perm]
 
 
+def xor(a, b):
+    """Bit-by-Bit XOR of two bitlists."""
+    return [i ^ j for i, j in zip(a, b)]
+
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()

@@ -37,6 +37,49 @@ def key_schedule(key):
     return keys
 
 
+def feistel(R, K):
+    """
+    Feistel (F) function which operates on right half block and a subkey.
+
+    Page 16 of FIPS.
+    https://en.wikipedia.org/wiki/Data_encryption_standard#The_Feistel_(F)_function
+    """
+
+    # Apply a permutation that expands the 32 bit half block to 48 bits
+    R = utils.permute(R, C.EXPAND)
+
+    # XOR the expanded value with given subkey
+    T = utils.xor(R, K)
+
+    # Apply SBoxes to a 48 bit input and return 32 bit output.
+    T = substitute(T)
+
+    # Finally, apply the direct permutation P
+    T = utils.permute(T, C.P)
+
+    return T
+
+
+def substitute(T):
+    """
+    Apply SBoxes to a 48 bit input and return 32 bit output.
+    """
+
+    sub = []
+
+    # The given 48 bit block is divided into eight 6 bit pieces
+    for i, p in enumerate(utils.nsplit(T, 6)):
+
+        # First and Last bit give the row of SBOX
+        row = int(str(p[0]) + str(p[5]), 2)
+        # And the other bits give the column
+        col = int("".join([str(s) for s in p[1:][:-1]]), 2)
+
+        sub += list(map(int, utils.bits(C.SBOX[i][row][col])))
+
+    return sub
+
+
 def encrypt(plain_text, key):
     """
     The DES Encryption routine.
@@ -49,16 +92,44 @@ def encrypt(plain_text, key):
         print("Key is more than 8 Bytes long; taking first 8 Bytes.")
         key = key[:8]
 
-    # TODO: Add padding to data
-
     if len(plain_text) % 8 != 0:
         print(len(plain_text))
         raise ValueError("plain_text length should be a multiple of 8.")
 
+    # TODO: Add padding to data
+    plain_text = utils.str_to_bits(plain_text)
+
     # Generate round keys
     subkeys = key_schedule(key)
 
-    print(subkeys)
+    # This will store the result of encryption
+    cipher = []
+
+    # Since each block is encrypted independently of other blocks, this is ECB mode
+    # TODO: Add support for other encryption modes: CBC etc.
+
+    # Split input text into
+    for block in utils.nsplit(plain_text, 64):
+
+        # Apply initial permutation to the block
+        block = utils.permute(block, C.IP)
+
+        # Split it into two halves
+        L, R = utils.nsplit(block, 32)
+
+        # The 16 rounds
+        for i in range(16):
+            L = R
+            R = utils.xor(L, feistel(R, subkeys[i]))
+
+            print("%d - %s%s" % (i, utils.bits_to_hex(L), utils.bits_to_hex(R)))
+
+        # Apply the inverse initial permutation
+        cipher += utils.permute(R + L, C.IP_i)
+
+    cipher_text = utils.bits_to_str(cipher)
+
+    return cipher_text
 
 
 def decrypt(cipher_text, key):
