@@ -46,10 +46,10 @@ def feistel(R, K):
     """
 
     # Apply a permutation that expands the 32 bit half block to 48 bits
-    R = utils.permute(R, C.EXPAND)
+    T = utils.permute(R, C.EXPAND)
 
     # XOR the expanded value with given subkey
-    T = utils.xor(R, K)
+    T = utils.xor(T, K)
 
     # Apply SBoxes to a 48 bit input and return 32 bit output.
     T = substitute(T)
@@ -116,6 +116,7 @@ def des(text, key, typ="encrypt"):
 
         # Split it into two halves
         L, R = utils.nsplit(block, 32)
+        print("%d - %s%s" % (0, utils.bits_to_hex(L), utils.bits_to_hex(R)))
 
         # The 16 rounds
         for i in range(16):
@@ -130,7 +131,8 @@ def des(text, key, typ="encrypt"):
             L = R
             R = T
 
-            print("%d - %s%s" % (i, utils.bits_to_hex(L), utils.bits_to_hex(R)))
+            print("%d - %s%s" %
+                  (i + 1, utils.bits_to_hex(L), utils.bits_to_hex(R)))
 
         # Apply the inverse initial permutation
         cipher += utils.permute(R + L, C.IP_i)
