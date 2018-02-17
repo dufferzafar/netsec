@@ -80,7 +80,7 @@ def substitute(T):
     return sub
 
 
-def encrypt(plain_text, key):
+def des(text, key, typ="encrypt"):
     """
     The DES Encryption routine.
     """
@@ -92,12 +92,12 @@ def encrypt(plain_text, key):
         print("Key is more than 8 Bytes long; taking first 8 Bytes.")
         key = key[:8]
 
-    if len(plain_text) % 8 != 0:
-        print(len(plain_text))
-        raise ValueError("plain_text length should be a multiple of 8.")
+    if len(text) % 8 != 0:
+        print(len(text))
+        raise ValueError("text length should be a multiple of 8.")
 
     # TODO: Add padding to data
-    plain_text = utils.str_to_bits(plain_text)
+    text = utils.str_to_bits(text)
 
     # Generate round keys
     subkeys = key_schedule(key)
@@ -109,7 +109,7 @@ def encrypt(plain_text, key):
     # TODO: Add support for other encryption modes: CBC etc.
 
     # Split input text into
-    for block in utils.nsplit(plain_text, 64):
+    for block in utils.nsplit(text, 64):
 
         # Apply initial permutation to the block
         block = utils.permute(block, C.IP)
@@ -119,8 +119,16 @@ def encrypt(plain_text, key):
 
         # The 16 rounds
         for i in range(16):
+
+            # Only the keys change during encryption
+            if typ == "encrypt":
+                K = subkeys[i]
+            else:
+                K = subkeys[15 - i]
+
+            T = utils.xor(L, feistel(R, K))
             L = R
-            R = utils.xor(L, feistel(R, subkeys[i]))
+            R = T
 
             print("%d - %s%s" % (i, utils.bits_to_hex(L), utils.bits_to_hex(R)))
 
@@ -132,8 +140,12 @@ def encrypt(plain_text, key):
     return cipher_text
 
 
+def encrypt(plain_text, key):
+    return des(plain_text, key, typ="encrypt")
+
+
 def decrypt(cipher_text, key):
-    raise NotImplementedError
+    return des(cipher_text, key, typ="decrypt")
 
 
 if __name__ == '__main__':
@@ -145,4 +157,4 @@ if __name__ == '__main__':
     plain_text = "Lovegood"
 
     cipher_text = encrypt(plain_text, key)
-    # deciphered = decrypt(cipher_text, key)
+    deciphered = decrypt(cipher_text, key)
