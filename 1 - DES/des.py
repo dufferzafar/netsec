@@ -116,7 +116,7 @@ def des(text, key, typ="encrypt"):
 
         # Split it into two halves
         L, R = utils.nsplit(block, 32)
-        print("%d - %s%s" % (0, utils.bits_to_hex(L), utils.bits_to_hex(R)))
+        print("%d - L%d: %s   R%d: %s" % (0, 0, utils.bits_to_hex(L), 0, utils.bits_to_hex(R)))
 
         # The 16 rounds
         for i in range(16):
@@ -131,8 +131,8 @@ def des(text, key, typ="encrypt"):
             L = R
             R = T
 
-            print("%d - %s%s" %
-                  (i + 1, utils.bits_to_hex(L), utils.bits_to_hex(R)))
+            print("%d - L%d: %s   R%d: %s" %
+                  (i + 1, i + 1, utils.bits_to_hex(L), i + 1, utils.bits_to_hex(R)))
 
         # Apply the inverse initial permutation
         cipher += utils.permute(R + L, C.IP_i)
@@ -158,5 +158,15 @@ if __name__ == '__main__':
     # plain_text = "I'd want some peace and quiet, if it were me."
     plain_text = "Lovegood"
 
+    print("Plain Text (Hexadecimal Format) = " + str(utils.bits_to_hex(utils.str_to_bits(plain_text))))
+    print("Key (Hexadecimal Format) = " + str(utils.bits_to_hex(utils.str_to_bits(key))))
+    
     cipher_text = encrypt(plain_text, key)
+    
+    print("Cipher Text (Hexadecimal Format) = " + str(utils.bits_to_hex(utils.str_to_bits(cipher_text))))
+    print("Key (Hexadecimal Format) = " + str(utils.bits_to_hex(utils.str_to_bits(key))))
+    
     deciphered = decrypt(cipher_text, key)
+    
+    print("De-ciphered Plain Text (Hexadecimal Format) = " + str(utils.bits_to_hex(utils.str_to_bits(deciphered))))
+
