@@ -156,6 +156,27 @@ def decrypt(cipher_text, key):
     return des(cipher_text, key, typ="decrypt")
 
 
+# Page 27 of the FIPS Standard
+def tdea_encrypt(plain_text, k1, k2, k3):
+    """Triple DES Encryption."""
+    t0 = plain_text
+    t1 = des(t0, k1, typ="encrypt")
+    t2 = des(t1, k2, typ="decrypt")
+    t3 = des(t2, k3, typ="encrypt")
+
+    return t3
+
+
+def tdea_decrypt(cipher_text, k1, k2, k3):
+    """Triple DES Decryption."""
+    t0 = cipher_text
+    t1 = des(t0, k3, typ="decrypt")
+    t2 = des(t1, k2, typ="encrypt")
+    t3 = des(t2, k1, typ="decrypt")
+
+    return t3
+
+
 if __name__ == '__main__':
     key = "Nevillle"
     plain_text = "Lovegood"
