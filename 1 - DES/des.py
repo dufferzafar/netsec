@@ -1,3 +1,8 @@
+"""
+Data Encryption Standard.
+
+https://csrc.nist.gov/csrc/media/publications/fips/46/3/archive/1999-10-25/documents/fips46-3.pdf
+"""
 
 import utils
 import constants as C
@@ -116,7 +121,8 @@ def des(text, key, typ="encrypt"):
 
         # Split it into two halves
         L, R = utils.nsplit(block, 32)
-        print("%d - L%d: %s   R%d: %s" % (0, 0, utils.bits_to_hex(L), 0, utils.bits_to_hex(R)))
+        print("%2d - L%2d: %s   R%2d: %s" %
+              (0, 0, utils.bits_to_hex(L), 0, utils.bits_to_hex(R)))
 
         # The 16 rounds
         for i in range(16):
@@ -131,7 +137,7 @@ def des(text, key, typ="encrypt"):
             L = R
             R = T
 
-            print("%d - L%d: %s   R%d: %s" %
+            print("%2d - L%2d: %s   R%2d: %s" %
                   (i + 1, i + 1, utils.bits_to_hex(L), i + 1, utils.bits_to_hex(R)))
 
         # Apply the inverse initial permutation
@@ -151,22 +157,28 @@ def decrypt(cipher_text, key):
 
 
 if __name__ == '__main__':
-    # TODO: Clip key if len > 8
     key = "Nevillle"
-
-    # TODO: Print plain text in bits, hex etc.
-    # plain_text = "I'd want some peace and quiet, if it were me."
     plain_text = "Lovegood"
 
-    print("Plain Text (Hexadecimal Format) = " + str(utils.bits_to_hex(utils.str_to_bits(plain_text))))
-    print("Key (Hexadecimal Format) = " + str(utils.bits_to_hex(utils.str_to_bits(key))))
-    
-    cipher_text = encrypt(plain_text, key)
-    
-    print("Cipher Text (Hexadecimal Format) = " + str(utils.bits_to_hex(utils.str_to_bits(cipher_text))))
-    print("Key (Hexadecimal Format) = " + str(utils.bits_to_hex(utils.str_to_bits(key))))
-    
-    deciphered = decrypt(cipher_text, key)
-    
-    print("De-ciphered Plain Text (Hexadecimal Format) = " + str(utils.bits_to_hex(utils.str_to_bits(deciphered))))
+    print("Plain Text (Hexadecimal Format) = %s" %
+          utils.bits_to_hex(utils.str_to_bits(plain_text)))
+    print("Key (Hexadecimal Format) = %s" %
+          utils.bits_to_hex(utils.str_to_bits(key)))
+    print("\n")
 
+    cipher_text = encrypt(plain_text, key)
+
+    print("\n")
+    print("Cipher Text (Hexadecimal Format) = %s" %
+          utils.bits_to_hex(utils.str_to_bits(cipher_text)))
+    print("Key (Hexadecimal Format) = %s" %
+          utils.bits_to_hex(utils.str_to_bits(key)))
+    print("\n")
+
+    deciphered = decrypt(cipher_text, key)
+
+    print("\n")
+    print("De-ciphered Plain Text (Hexadecimal Format) = %s" %
+          utils.bits_to_hex(utils.str_to_bits(deciphered)))
+
+    assert (plain_text == deciphered)
