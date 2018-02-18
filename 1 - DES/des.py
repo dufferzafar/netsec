@@ -113,6 +113,8 @@ def des(text, key, typ="encrypt"):
     # Since each block is encrypted independently of other blocks, this is ECB mode
     # TODO: Add support for other encryption modes: CBC etc.
 
+    round_out = []
+
     # Split input text into
     for block in utils.nsplit(text, 64):
 
@@ -123,6 +125,7 @@ def des(text, key, typ="encrypt"):
         L, R = utils.nsplit(block, 32)
         print("%2d - L%2d: %s   R%2d: %s" %
               (0, 0, utils.bits_to_hex(L), 0, utils.bits_to_hex(R)))
+        round_out.append((utils.bits_to_hex(L), utils.bits_to_hex(R)))
 
         # The 16 rounds
         for i in range(16):
@@ -139,13 +142,14 @@ def des(text, key, typ="encrypt"):
 
             print("%2d - L%2d: %s   R%2d: %s" %
                   (i + 1, i + 1, utils.bits_to_hex(L), i + 1, utils.bits_to_hex(R)))
+            round_out.append((utils.bits_to_hex(L), utils.bits_to_hex(R)))
 
         # Apply the inverse initial permutation
         cipher += utils.permute(R + L, C.IP_i)
 
     cipher_text = utils.bits_to_str(cipher)
 
-    return cipher_text
+    return cipher_text, round_out
 
 
 def encrypt(plain_text, key):
@@ -187,7 +191,7 @@ if __name__ == '__main__':
           utils.bits_to_hex(utils.str_to_bits(key)))
     print("\n")
 
-    cipher_text = encrypt(plain_text, key)
+    cipher_text, encry_rounds = encrypt(plain_text, key)
 
     print("\n")
     print("Cipher Text (Hexadecimal Format) = %s" %
@@ -196,10 +200,19 @@ if __name__ == '__main__':
           utils.bits_to_hex(utils.str_to_bits(key)))
     print("\n")
 
-    deciphered = decrypt(cipher_text, key)
+    deciphered, decry_rounds = decrypt(cipher_text, key)
 
     print("\n")
     print("De-ciphered Plain Text (Hexadecimal Format) = %s" %
           utils.bits_to_hex(utils.str_to_bits(deciphered)))
 
+    # Validating that our DES implementation works correctly!
+    # First ensure that we recover plain text correctly
     assert (plain_text == deciphered)
+
+    for j in range(len(encry_rounds)):
+
+        LE, RE = encry_rounds[j]
+        LD, RD = decry_rounds[16 - j]
+
+        assert LE == RD and RE == LD
