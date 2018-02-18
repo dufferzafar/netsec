@@ -39,7 +39,7 @@ def bits_to_hex(b):
     '61'
     """
     b = list(map(str, b))
-    return "".join([hex(int("".join(byte), 2))[2:] for byte in nsplit(b, 8)])
+    return "".join([hex(int("".join(byte), 2))[2:] for byte in nsplit(b, 4)])
 
 
 # TODO: Should this return a string or a list?
