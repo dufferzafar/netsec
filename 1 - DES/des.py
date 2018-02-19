@@ -164,9 +164,9 @@ def decrypt(cipher_text, key):
 def tdea_encrypt(plain_text, k1, k2, k3):
     """Triple DES Encryption."""
     t0 = plain_text
-    t1 = des(t0, k1, typ="encrypt")
-    t2 = des(t1, k2, typ="decrypt")
-    t3 = des(t2, k3, typ="encrypt")
+    t1,x = des(t0, k1, typ="encrypt")
+    t2,y = des(t1, k2, typ="decrypt")
+    t3,z = des(t2, k3, typ="encrypt")
 
     return t3
 
@@ -174,9 +174,9 @@ def tdea_encrypt(plain_text, k1, k2, k3):
 def tdea_decrypt(cipher_text, k1, k2, k3):
     """Triple DES Decryption."""
     t0 = cipher_text
-    t1 = des(t0, k3, typ="decrypt")
-    t2 = des(t1, k2, typ="encrypt")
-    t3 = des(t2, k1, typ="decrypt")
+    t1,x = des(t0, k3, typ="decrypt")
+    t2,y = des(t1, k2, typ="encrypt")
+    t3,z = des(t2, k1, typ="decrypt")
 
     return t3
 
@@ -216,3 +216,34 @@ if __name__ == '__main__':
         LD, RD = decry_rounds[16 - j]
 
         assert LE == RD and RE == LD
+
+    #Triple DES
+    print("\n\n TRIPLE-DES\n")
+    k1 = "bedazzle"
+    k2 = "Miracles"
+    k3 = "Logician"
+    t_cipher_text = tdea_encrypt(plain_text, k1, k2, k3)
+    t_deciphered_text = tdea_decrypt(t_cipher_text, k1, k2, k3)
+    print("\nPlain Text (Hexadecimal Format) = %s" %
+          utils.bits_to_hex(utils.str_to_bits(plain_text)))
+
+    print("Key 1 (Hexadecimal Format) = %s" %
+          utils.bits_to_hex(utils.str_to_bits(k1)))
+    print("Key 2 (Hexadecimal Format) = %s" %
+          utils.bits_to_hex(utils.str_to_bits(k2)))
+    print("Key 3 (Hexadecimal Format) = %s" %
+          utils.bits_to_hex(utils.str_to_bits(k3)))
+
+    print("\nCipher Text (Hexadecimal Format) = %s" %
+          utils.bits_to_hex(utils.str_to_bits(t_cipher_text)))
+
+    print("Key 3 (Hexadecimal Format) = %s" %
+          utils.bits_to_hex(utils.str_to_bits(k3)))
+    print("Key 2 (Hexadecimal Format) = %s" %
+          utils.bits_to_hex(utils.str_to_bits(k2)))
+    print("Key 1 (Hexadecimal Format) = %s" %
+          utils.bits_to_hex(utils.str_to_bits(k1)))
+
+    print("\nDeciphered Plain Text (Hexadecimal Format) = %s" %
+          utils.bits_to_hex(utils.str_to_bits(t_deciphered_text)))
+    assert (plain_text == t_deciphered_text)
