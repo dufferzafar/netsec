@@ -4,6 +4,7 @@ The RSA algorithm.
 https://en.wikipedia.org/wiki/RSA_(cryptosystem)
 """
 
+import binascii
 import random
 import math
 
@@ -43,7 +44,7 @@ def modinv(a, m):
 
 def generate_key_pair(p, q):
     """
-    Generate a key-pair
+    Generate a key-pair.
     """
 
     n = p * q
@@ -66,16 +67,9 @@ def encrypt(msg, key):
     k, n = key
     nbytes = int(math.log(n, 2) // 8)
 
-    cipher = ""
-    for p in utils.str_to_ints(msg, nbytes):
-        c = pow(p, k, n)
-
-        for _ in range(nbytes + 1):
-            cipher += chr(
-                (c & (255 << (8 * nbytes))) >> (8 * nbytes)
-            )
-            c = c << 8
-
+    cipher = [pow(p, k, n) for p in utils.str_to_ints(msg, nbytes)]
+    cipher = utils.ints_to_str(cipher, nbytes + 1)
+    # cipher = binascii.hexlify(cipher.encode()).decode()
     return cipher
 
 
@@ -83,15 +77,9 @@ def decrypt(cipher, key):
     k, n = key
     nbytes = int(math.log(n, 2) // 8)
 
-    plain = ""
-    for c in utils.str_to_ints(cipher, nbytes + 1):
-        p = pow(c, k, n)
-
-        for _ in range(nbytes):
-            plain += chr(
-                (p & (255 << (8 * (nbytes - 1)))) >> (8 * (nbytes - 1))
-            )
-            p = p << 8
+    # plain = binascii.unhexlify(cipher.encode()).decode()
+    plain = [pow(p, k, n) for p in utils.str_to_ints(cipher, nbytes + 1)]
+    plain = utils.ints_to_str(plain, nbytes)
 
     return plain
 
