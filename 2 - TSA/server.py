@@ -1,6 +1,9 @@
-import socket
-import threading
 import datetime
+import hashlib
+import threading
+import socket
+
+import rsa
 
 
 class TimestampServer(object):
@@ -8,12 +11,9 @@ class TimestampServer(object):
         self.host = host
         self.port = port
 
-        # First twin prime pair after 1 billion
-        # These are the P, Q fed into RSA
-        self.primes = (1000000007, 1000000009)
-
-        # self.pub_key =
-        # self.pvt_key =
+        # A key-pair generated using: rsa.generate_key_pair(1000037, 1000039)
+        self.pub_key = (172946823661, 1000076001443)
+        self.pvt_key = (739559892397, 1000076001443)
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -39,7 +39,7 @@ class TimestampServer(object):
 
         while True:
             try:
-                data = client.recv(1024)
+                data = client.recv(4096)
                 if data:
 
                     data = data.decode()
@@ -49,14 +49,13 @@ class TimestampServer(object):
 
                         now = str(datetime.datetime.utcnow())
 
-                        # hashlib 256 here
-                        # nhash = dhash + "||" + now
-                        # sig = rsa.sign(nhash, self.pvt_key)
+                        doc_time = (dhash + "||" + now).encode("ascii")
+                        nhash = hashlib.sha256(doc_time).hexdigest()
 
-                        sig = "SIG"
+                        sig = rsa.encrypt(nhash, self.pvt_key)
 
                         response = now + "||" + sig
-                        print("> Sending to client:", response)
+                        # print("> Sending to client:", response)
                     else:
                         response = "echo: " + data.decode()
 
