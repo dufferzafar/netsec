@@ -4,7 +4,6 @@ The RSA algorithm.
 https://en.wikipedia.org/wiki/RSA_(cryptosystem)
 """
 
-import binascii
 import random
 import math
 
@@ -69,7 +68,7 @@ def encrypt(msg, key):
 
     cipher = [pow(p, k, n) for p in utils.str_to_ints(msg, nbytes)]
     cipher = utils.ints_to_str(cipher, nbytes + 1)
-    # cipher = binascii.hexlify(cipher.encode()).decode()
+
     return cipher
 
 
@@ -77,7 +76,6 @@ def decrypt(cipher, key):
     k, n = key
     nbytes = int(math.log(n, 2) // 8)
 
-    # plain = binascii.unhexlify(cipher)
     plain = [pow(p, k, n) for p in utils.str_to_ints(cipher, nbytes + 1)]
     plain = utils.ints_to_str(plain, nbytes)
 

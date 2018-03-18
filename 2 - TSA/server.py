@@ -54,11 +54,11 @@ class TimestampServer(object):
 
                         sig = rsa.encrypt(h2, self.pvt_key)
 
-                        print(h2)
+                        # print(h2)
 
-                        # h3 = rsa.decrypt(sig, self.pub_key)
-                        # print(h2, h3)
-                        # assert h2 == h3
+                        print("> Verifiying that the signature is OK")
+                        h3 = rsa.decrypt(sig, self.pub_key)
+                        assert h2 == h3
 
                         response = now + "||" + sig
                         print("> Sending timestamp and signature to client")

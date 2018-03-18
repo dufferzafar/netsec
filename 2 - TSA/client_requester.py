@@ -1,4 +1,3 @@
-import binascii
 import hashlib
 import os
 import socket
@@ -44,16 +43,22 @@ class ClientRequester(object):
 
         data = self.sock.recv(4096)
         data = data.decode()
+
         # print("> Received from server:", data, "\n")
-        print("> Received data from server:")
+        print("> Received timestamp & signature from server")
 
         print("> Dumping data to:", output_file)
         with open(output_file, "w") as out:
             out.write("%d\n" % len(data))
             out.write(data)
-            # out.write(binascii.hexlify(input_data).decode())
-            # out.write(rsa.encrypt(input_data.decode(), self.pvt_key))
-            out.write(input_data.decode())
+
+            doc = input_data.decode()
+            enc_doc = rsa.encrypt(doc, self.pvt_key)
+            out.write(enc_doc)
+
+            # Ensure that decryption is OK
+            # dec_doc = rsa.decrypt(enc_doc, self.pub_key)
+            # assert doc == dec_doc
 
         # print("This file can now be shared securely.")
 
