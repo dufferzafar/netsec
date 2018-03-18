@@ -14,6 +14,9 @@ class ClientRequester(object):
         self.pub_key = (172946823661, 1000036000099)
         self.pvt_key = (640311959845, 1000036000099)
 
+        self.tsa_pub_key = (172946823661, 1000076001443)
+        self.verifier_pub_key = (172946823661, 1000072001287)
+
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         try:
@@ -23,7 +26,6 @@ class ClientRequester(object):
             exit(1)
 
     def run(self):
-        # TODO: Proper CLI?
         input_file = sys.argv[1]
 
         name, ext = os.path.splitext(input_file)
@@ -53,8 +55,9 @@ class ClientRequester(object):
             out.write(data)
 
             doc = input_data.decode()
-            enc_doc = rsa.encrypt(doc, self.pvt_key)
-            out.write(enc_doc)
+            doc = rsa.encrypt(doc, self.verifier_pub_key)
+            doc = rsa.encrypt(doc, self.pvt_key)
+            out.write(doc)
 
             # Ensure that decryption is OK
             # dec_doc = rsa.decrypt(enc_doc, self.pub_key)
