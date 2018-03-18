@@ -1,7 +1,5 @@
 """Various utility functions."""
 
-import math
-
 
 def str_to_ints(msg, B):
     """
@@ -31,9 +29,9 @@ def ints_to_str(ints, B):
 
     txt = ""
     for i in ints:
-        for _ in range(B + 1):
+        for _ in range(B):
             txt += chr(
-                (i & (255 << (8 * B))) >> (8 * B)
+                (i & (255 << (8 * (B - 1)))) >> (8 * (B - 1))
             )
             i = i << 8
 
@@ -49,10 +47,3 @@ def nsplit(s, n):
 
 def hex_repr(s):
     return " ".join("%02x" % ord(b) for b in s)
-
-
-if __name__ == '__main__':
-    I = str_to_ints("Shadab Zafar is a good boy.", 2)
-
-    for i in I:
-        print(i, math.log(i, 2))
