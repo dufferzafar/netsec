@@ -44,18 +44,24 @@ class TimestampServer(object):
 
                     data = data.decode()
                     if data.startswith("HASH: "):
-                        dhash = data.lstrip("HASH: ")
-                        print("> Received a document's hash: %s" % dhash)
+                        h1 = data.lstrip("HASH: ")
+                        print("> Received a document's hash: %s" % h1)
 
                         now = str(datetime.datetime.utcnow())
 
-                        doc_time = (dhash + "||" + now).encode("ascii")
-                        nhash = hashlib.sha256(doc_time).hexdigest()
+                        doc_time = (h1 + "||" + now).encode()
+                        h2 = hashlib.sha256(doc_time).hexdigest()
 
-                        sig = rsa.encrypt(nhash, self.pvt_key)
+                        sig = rsa.encrypt(h2, self.pvt_key)
+
+                        print(h2)
+
+                        # h3 = rsa.decrypt(sig, self.pub_key)
+                        # print(h2, h3)
+                        # assert h2 == h3
 
                         response = now + "||" + sig
-                        # print("> Sending to client:", response)
+                        print("> Sending timestamp and signature to client")
                     else:
                         response = "echo: " + data.decode()
 
@@ -64,9 +70,9 @@ class TimestampServer(object):
                     raise socket.timeout()
 
             except socket.timeout:
-                    print(">>> Client disconnected: ", address, "\n")
-                    client.close()
-                    return False
+                print(">>> Client disconnected: ", address, "\n")
+                client.close()
+                return False
 
 
 if __name__ == "__main__":

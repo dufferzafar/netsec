@@ -77,7 +77,7 @@ def decrypt(cipher, key):
     k, n = key
     nbytes = int(math.log(n, 2) // 8)
 
-    # plain = binascii.unhexlify(cipher.encode()).decode()
+    # plain = binascii.unhexlify(cipher)
     plain = [pow(p, k, n) for p in utils.str_to_ints(cipher, nbytes + 1)]
     plain = utils.ints_to_str(plain, nbytes)
 
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     pv, pu = generate_key_pair(1000037, 1000039)
     print(pv, pu)
 
-    pln = "A conversion specifier contains two or more characters and has the following components, which must occur in this order:"
+    pln = "b04a3c87cf25a743edafc8eca7d25979bf74b21f27674817ae64c24157de538f"
     enc = encrypt(pln, pv)
     dec = decrypt(enc, pu)
 

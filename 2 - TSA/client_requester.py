@@ -1,3 +1,4 @@
+import binascii
 import hashlib
 import os
 import socket
@@ -9,9 +10,6 @@ import rsa
 class ClientRequester(object):
     def __init__(self, tsa_host='', tsa_port=7171):
         self.tsa = (tsa_host, tsa_port)
-
-        # TODO: Hardcode the public key of the tsa
-        # self.tsa_pub_key =
 
         # A key-pair generated using: rsa.generate_key_pair(1000003, 1000033)
         self.pub_key = (172946823661, 1000036000099)
@@ -47,18 +45,15 @@ class ClientRequester(object):
         data = self.sock.recv(4096)
         data = data.decode()
         # print("> Received from server:", data, "\n")
-
-        data = data.split("||")
-        now, sig = data[0], data[1]
+        print("> Received data from server:")
 
         print("> Dumping data to:", output_file)
         with open(output_file, "w") as out:
-            out.write(rsa.encrypt(input_data.decode("ascii"), self.pvt_key))
-            out.write("\n")
-            out.write(now)
-            out.write("\n")
-            out.write(sig)
-            out.write("\n")
+            out.write("%d\n" % len(data))
+            out.write(data)
+            # out.write(binascii.hexlify(input_data).decode())
+            # out.write(rsa.encrypt(input_data.decode(), self.pvt_key))
+            out.write(input_data.decode())
 
         # print("This file can now be shared securely.")
 
