@@ -85,12 +85,14 @@ def decrypt(cipher, key):
 
 
 if __name__ == '__main__':
-    # pv, pu = generate_key_pair(1000000093, 1000000097)
-    pv, pu = generate_key_pair(101, 103)
+    pv, pu = generate_key_pair(1000037, 1000039)
+    print(pv, pu)
 
-    pln = "Shadab Zafar is a good boy."
+    pln = "A conversion specifier contains two or more characters and has the following components, which must occur in this order:"
     enc = encrypt(pln, pv)
     dec = decrypt(enc, pu)
 
+    print(repr(pln), len(pln))
+    print(repr(dec), len(dec))
+
     assert pln == dec
-    print(pln)
