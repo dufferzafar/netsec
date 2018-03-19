@@ -44,7 +44,7 @@ class ClientVerifier(object):
         if h2 == h3:
             print("> Document has not been modified and was available at: ", now)
         else:
-            print("> Document/timestamp has been modified or it was not signed by the TSA.")
+            print("> Document has been modified or it was not signed by the TSA.")
 
 
 if __name__ == '__main__':
