@@ -143,8 +143,9 @@ def des(text, key, typ="encrypt"):
             L = R
             R = T
 
-            print("%2d - L%2d: %s   R%2d: %s" %
-                  (i + 1, i + 1, utils.bits_to_hex(L), i + 1, utils.bits_to_hex(R)))
+            print("%2d - L%2d: %s   R%2d: %s  K%2d: %s" %
+                  (i + 1, i + 1, utils.bits_to_hex(L), i + 1, utils.bits_to_hex(R), i + 1, utils.bits_to_hex(K)))
+
             round_out.append((utils.bits_to_hex(L), utils.bits_to_hex(R)))
 
         # Apply the inverse initial permutation
@@ -186,7 +187,7 @@ def tdea_decrypt(cipher_text, k1, k2, k3):
 
 if __name__ == '__main__':
     key = "Nevillle"
-    plain_text = "Lovegood"
+    plain_text = "Shadab78"
 
     print("Plain Text (Hexadecimal Format) = %s" %
           utils.bits_to_hex(utils.str_to_bits(plain_text)))
