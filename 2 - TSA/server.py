@@ -53,6 +53,7 @@ class TimestampServer(object):
                         doc_time = (h1 + "||" + now).encode()
                         h2 = hashlib.sha256(doc_time).hexdigest()
 
+                        # A digital signature is timed_hash encrypted with private key of TSA
                         sig = rsa.encrypt(h2, self.pvt_key)
                         sig = base64.b64encode(h2.encode()).decode()
                         now = base64.b64encode(now.encode()).decode()

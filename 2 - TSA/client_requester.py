@@ -30,7 +30,6 @@ class ClientRequester(object):
         input_file = sys.argv[1]
 
         name, ext = os.path.splitext(input_file)
-        output_file = name + "_stamped" + ext
 
         print()
         print("> Given input file:", input_file)
@@ -50,12 +49,14 @@ class ClientRequester(object):
         # print("> Received from server:", now_sig, "\n")
         print("> Received timestamp & signature from server")
 
+        output_file = name + "_stamped" + ext
         print("> Dumping data to:", output_file)
         with open(output_file, "w") as out:
             # out.write("%d\n" % len(data))
             out.write(now_sig)
             out.write("\n")
 
+            # Transport data with signature & timestamp
             doc = input_data.decode()
             doc = rsa.encrypt(doc, self.verifier_pub_key)
             doc = rsa.encrypt(doc, self.pvt_key)

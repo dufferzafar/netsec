@@ -113,6 +113,8 @@ def des(text, key, typ="encrypt"):
     # Since each block is encrypted independently of other blocks, this is ECB mode
     # TODO: Add support for other encryption modes: CBC etc.
 
+    # Store outputs of each round
+    # (used to verify that encryption & decryption are inverses of each other)
     round_out = []
 
     # Split input text into
@@ -136,7 +138,8 @@ def des(text, key, typ="encrypt"):
             else:
                 K = subkeys[15 - i]
 
-            T = utils.xor(L, feistel(R, K))
+            T = feistel(R, K)
+            T = utils.xor(L, T)
             L = R
             R = T
 
@@ -164,9 +167,9 @@ def decrypt(cipher_text, key):
 def tdea_encrypt(plain_text, k1, k2, k3):
     """Triple DES Encryption."""
     t0 = plain_text
-    t1,x = des(t0, k1, typ="encrypt")
-    t2,y = des(t1, k2, typ="decrypt")
-    t3,z = des(t2, k3, typ="encrypt")
+    t1, x = des(t0, k1, typ="encrypt")
+    t2, y = des(t1, k2, typ="decrypt")
+    t3, z = des(t2, k3, typ="encrypt")
 
     return t3
 
@@ -174,9 +177,9 @@ def tdea_encrypt(plain_text, k1, k2, k3):
 def tdea_decrypt(cipher_text, k1, k2, k3):
     """Triple DES Decryption."""
     t0 = cipher_text
-    t1,x = des(t0, k3, typ="decrypt")
-    t2,y = des(t1, k2, typ="encrypt")
-    t3,z = des(t2, k1, typ="decrypt")
+    t1, x = des(t0, k3, typ="decrypt")
+    t2, y = des(t1, k2, typ="encrypt")
+    t3, z = des(t2, k1, typ="decrypt")
 
     return t3
 
@@ -217,8 +220,8 @@ if __name__ == '__main__':
 
         assert LE == RD and RE == LD
 
-    #Triple DES
-    print("\n\n TRIPLE-DES\n")
+    # Triple DES
+    print("\n\n TRIPLE-DES \n")
     k1 = "bedazzle"
     k2 = "Miracles"
     k3 = "Logician"
