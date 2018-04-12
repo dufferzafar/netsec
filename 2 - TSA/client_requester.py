@@ -1,3 +1,4 @@
+import base64
 import hashlib
 import os
 import socket
@@ -43,20 +44,22 @@ class ClientRequester(object):
         resp = "HASH: " + dhash
         self.sock.send(resp.encode())
 
-        data = self.sock.recv(4096)
-        data = data.decode()
+        now_sig = self.sock.recv(4096)
+        now_sig = now_sig.decode()
 
-        # print("> Received from server:", data, "\n")
+        # print("> Received from server:", now_sig, "\n")
         print("> Received timestamp & signature from server")
 
         print("> Dumping data to:", output_file)
         with open(output_file, "w") as out:
-            out.write("%d\n" % len(data))
-            out.write(data)
+            # out.write("%d\n" % len(data))
+            out.write(now_sig)
+            out.write("\n")
 
             doc = input_data.decode()
             doc = rsa.encrypt(doc, self.verifier_pub_key)
             doc = rsa.encrypt(doc, self.pvt_key)
+            doc = base64.b64encode(input_data).decode()
             out.write(doc)
 
             # Ensure that decryption is OK

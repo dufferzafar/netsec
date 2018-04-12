@@ -1,3 +1,4 @@
+import base64
 import datetime
 import hashlib
 import threading
@@ -53,6 +54,8 @@ class TimestampServer(object):
                         h2 = hashlib.sha256(doc_time).hexdigest()
 
                         sig = rsa.encrypt(h2, self.pvt_key)
+                        sig = base64.b64encode(h2.encode()).decode()
+                        now = base64.b64encode(now.encode()).decode()
 
                         # print(h2)
 
@@ -60,7 +63,7 @@ class TimestampServer(object):
                         # h3 = rsa.decrypt(sig, self.pub_key)
                         # assert h2 == h3
 
-                        response = now + "||" + sig
+                        response = now + "\n" + sig
                         print("> Sending timestamp and signature to client")
                     else:
                         response = "echo: " + data.decode()

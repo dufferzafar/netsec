@@ -1,3 +1,4 @@
+import base64
 import hashlib
 import sys
 
@@ -15,18 +16,21 @@ class ClientVerifier(object):
         self.requester_pub_key = (172946823661, 1000036000099)
 
     def run(self):
-        input_file = sys.argv[1]
+        stamped_file = sys.argv[1]
 
         print()
-        print("> Given input file:", input_file)
+        print("> Given input file:", stamped_file)
 
-        with open(input_file) as inp:
-            now, sig = inp.read(int(inp.readline())).split("||")
-            doc = inp.read()
+        with open(stamped_file) as inp:
+            now = inp.readline()
+            sig = inp.readline()
+            document = inp.read()
 
         # Decrypt the document using my private key and sender's public key
-        doc = rsa.decrypt(doc, self.requester_pub_key)
+        doc = rsa.decrypt(document, self.requester_pub_key)
         doc = rsa.decrypt(doc, self.pvt_key)
+        now = base64.b64decode(now).decode()
+        doc = base64.b64decode(document).decode()
 
         # Find hash of file
         h1 = hashlib.sha256(doc.encode()).hexdigest()
@@ -39,6 +43,7 @@ class ClientVerifier(object):
 
         # Decrypt the signature using public key of timestamp authority
         h3 = rsa.decrypt(sig, self.tsa_pub_key)
+        h3 = base64.b64decode(sig).decode()
 
         print()
         if h2 == h3:
