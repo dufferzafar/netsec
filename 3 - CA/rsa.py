@@ -69,6 +69,7 @@ def encrypt(msg, key):
 
     cipher = [pow(p, k, n) for p in utils.str_to_ints(msg, nbytes)]
     cipher = utils.ints_to_str(cipher, nbytes + 1)
+    cipher = base64.b64encode(msg.encode()).decode()[:-2]
 
     return cipher
 
@@ -79,19 +80,22 @@ def decrypt(cipher, key):
 
     plain = [pow(p, k, n) for p in utils.str_to_ints(cipher, nbytes + 1)]
     plain = utils.ints_to_str(plain, nbytes)
+    plain = base64.b64decode(cipher + "==").decode()
 
     return plain
 
 
 if __name__ == '__main__':
     pv, pu = generate_key_pair(1000037, 1000039)
-    print(pv, pu)
+    # print(pv, pu)
 
     pln = "b04a3c87cf25a743edafc8eca7d25979bf74b21f27674817ae64c24157de538f"
     enc = encrypt(pln, pv)
     dec = decrypt(enc, pu)
 
-    print(repr(pln), len(pln))
-    print(repr(dec), len(dec))
+    # print(repr(pln), len(pln))
+    # print(repr(dec), len(dec))
 
     assert pln == dec
+
+    print("Assertion Passed")
