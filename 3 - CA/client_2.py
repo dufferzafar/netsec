@@ -1,5 +1,7 @@
 import socket
 
+from client_common import cert_is_valid
+
 
 class Client(object):
     def __init__(self):
@@ -17,6 +19,11 @@ class Client(object):
 
         # Certificate that I will obtain from the CA
         self.certificate = ""
+
+        # Key of the client that wants to talk to me
+        # Will be obtained during key setup phase
+        self.client_id = ""
+        self.client_pub_key = ""
 
         # Socket on which I connect to a CA
         self.ca_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -55,13 +62,54 @@ class Client(object):
 
         print("> Sending my public key & certificate")
 
-        req = "CLIENT_HELLO:" + self.certificate
+        req = "CLIENT_KEY:" + self.certificate
         self.client_sock.send(req.encode())
+
+        #####################################################################
+
+        # Client sends its key & certificate back
+        print("\n=================================\n")
+        print("> Client has sent its public key & certificate: \n")
 
         resp = self.client_sock.recv(4096)
         resp = resp.decode()
 
-        print("Response from client:", resp)
+        if resp.startswith("CLIENT_KEY:"):
+            req = resp.lstrip("CLIENT_KEY:")
+
+            valid, self.client_id, self.client_pub_key = cert_is_valid(req, self.ca_pub_key)
+
+            if not valid:
+                exit()
+        else:
+            raise ValueError("Unexpected reply from client")
+
+        #####################################################################
+
+        # Send hello msg to client
+        print("\n=================================\n")
+
+        # TODO: Double encryption of hello message
+
+        req = "CLIENT_MSG:" + "Hello, client " + str(self.client_id)
+        self.client_sock.send(req.encode())
+
+        #####################################################################
+
+        resp = self.client_sock.recv(4096)
+        resp = resp.decode()
+
+        # Client has sent its key back
+        if resp.startswith("CLIENT_MSG:"):
+            req = resp.lstrip("CLIENT_MSG:")
+
+            # TODO: Double decryption of hello message
+
+            print("Received msg from client:", req)
+        else:
+            raise ValueError("Unexpected reply from client")
+
+        # print("Response from client:", resp)
 
     def get_certificate(self):
 

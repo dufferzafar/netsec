@@ -1,5 +1,10 @@
 import socket
 import threading
+import hashlib
+
+import rsa
+
+from client_common import cert_is_valid
 
 
 class Client(object):
@@ -17,6 +22,11 @@ class Client(object):
 
         # Certificate that I will obtain from the CA
         self.certificate = ""
+
+        # Key of the client that wants to talk to me
+        # Will be obtained during key setup phase
+        self.client_id = ""
+        self.client_pub_key = ""
 
         # Socket on which I connect to a CA
         self.ca_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -62,33 +72,38 @@ class Client(object):
             ).start()
 
     def serve_client(self, client, address):
-        print(">>> New client wants to chat:", address, "\n")
+        # print(">>> New client wants to chat:", address)
 
         while True:
             try:
                 data = client.recv(4096)
                 if data:
-
                     data = data.decode()
-                    if data.startswith("CLIENT_HELLO:"):
-                        req = data.lstrip("CLIENT_HELLO:")
 
-                        # Split the request into components
-                        user_id, pub_key_p, pub_key_n, issue_time, certi = req.split("|")
+                    if data.startswith("CLIENT_KEY:"):
+                        req = data.lstrip("CLIENT_KEY:")
 
-                        print("> Client's information: ")
-                        print(">> User ID: ", user_id)
-                        print(">> Public Key: ", (pub_key_p, pub_key_n))
-                        print(">> Issue Time: ", issue_time)
-                        print(">> Certificate: ", certi)
+                        print("\n=================================\n")
 
-                        # TODO: Verify that the certificate is correct
-                        # print("Certificate is valid for public key: ")
+                        valid, self.client_id, self.client_pub_key = cert_is_valid(req, self.ca_pub_key)
 
-                        # TODO: Send my own information to the client
+                        if not valid:
+                            raise socket.timeout
 
-                        # Also send the time back so client is able to verify the thing
-                        response = req
+                        print("\n=================================\n")
+
+                        # Send my own information to the client
+                        response = "CLIENT_KEY:" + self.certificate
+
+                    elif data.startswith("CLIENT_MSG:"):
+                        req = data.lstrip("CLIENT_MSG:")
+
+                        # TODO: Decrypt data with self.pvt_key
+                        # TODO: Decrypt data with self.client_pub_key
+
+                        print("Received msg from client:", req)
+
+                        response = "CLIENT_MSG:" + "Hello, client " + str(self.client_id)
                     else:
                         response = "echo: " + data.decode()
 
@@ -98,7 +113,7 @@ class Client(object):
 
             except socket.timeout:
                 print()
-                print(">>> Client disconnected: ", address, "\n")
+                # print(">>> Client disconnected: ", address, "\n")
                 client.close()
                 return False
 
