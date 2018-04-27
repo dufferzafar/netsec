@@ -3,6 +3,24 @@ import hashlib
 import rsa
 
 
+def get_certificate(ca_sock, user_id, user_pub_key, ca_pub_key):
+
+    print("My ID: ", user_id)
+    print("My Public Key: ", user_pub_key)
+
+    print("\nSending request for a new certificate to CA")
+
+    req = "REQ_CERT:%s" % user_id
+    ca_sock.send(req.encode())
+
+    resp = ca_sock.recv(4096).decode()
+    resp = rsa.decrypt(resp, ca_pub_key)
+
+    ca_sock.close()
+
+    return resp
+
+
 def cert_is_valid(req, ca_pub_key):
     # Split the request into components
     uid, pbk_p, pbk_n, issue_time, certi = req.split("|")

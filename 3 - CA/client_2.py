@@ -1,6 +1,6 @@
 import socket
 
-from client_common import cert_is_valid
+from client_common import cert_is_valid, get_certificate
 
 
 class Client(object):
@@ -45,7 +45,7 @@ class Client(object):
     def run(self):
 
         # TODO: Only get it if not already present?
-        self.certificate = self.get_certificate()
+        self.certificate = get_certificate(self.ca_sock, self.ID, self.pub_key, self.ca_pub_key)
 
         # The certificate received is encrypted with the private key of the authority
         # so, it can be opened
@@ -114,24 +114,6 @@ class Client(object):
             exit()
 
         # print("Response from client:", resp)
-
-    def get_certificate(self):
-
-        print("My ID: ", self.ID)
-        print("My Public Key: ", self.pub_key)
-
-        print("\nSending request for a new certificate to CA")
-
-        # TODO: Encrypt request with public key of CA
-        req = "REQ_CERT:%s" % self.ID
-        self.ca_sock.send(req.encode())
-
-        resp = self.ca_sock.recv(4096)
-        resp = resp.decode()
-
-        self.ca_sock.close()
-
-        return resp
 
 
 if __name__ == '__main__':

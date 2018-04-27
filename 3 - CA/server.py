@@ -63,6 +63,7 @@ class CertificationAuthorityServer(object):
 
                         # Also send the time back so client is able to verify the thing
                         response = req + "|" + certi
+                        response = rsa.encrypt(response, self.pvt_key)
                     else:
                         response = "echo: " + data.decode()
 
