@@ -11,9 +11,9 @@ class Client(object):
         # TODO: String IDs
         self.ID = 2
 
-        # A key-pair generated using: rsa.generate_key_pair(1000003, 1000033)
-        self.pub_key = (172946823661, 1000072001287)
-        self.pvt_key = (613431099685, 1000072001287)
+        # A key-pair generated using: rsa.generate_key_pair(1000037, 1000039)
+        self.pub_key = (927326331365, 1000076001443)
+        self.pvt_key = (765829640285, 1000076001443)
 
         self.ca_pub_key = (172946823661, 1000076001443)
 
