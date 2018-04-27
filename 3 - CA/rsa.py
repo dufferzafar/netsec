@@ -86,16 +86,18 @@ def decrypt(cipher, key):
 
 
 if __name__ == '__main__':
-    pv, pu = generate_key_pair(1000037, 1000039)
-    # print(pv, pu)
 
-    pln = "b04a3c87cf25a743edafc8eca7d25979bf74b21f27674817ae64c24157de538f"
-    enc = encrypt(pln, pv)
-    dec = decrypt(enc, pu)
+    # for _ in range(3):
+    #     pv, pu = generate_key_pair(1000037, 1000039)
+    #     print(pv, pu)
 
-    # print(repr(pln), len(pln))
-    # print(repr(dec), len(dec))
+    h = "c5801570ccb13da3093aeb275ec9a9866ed11ee724948fbc868e676c6139d96c"
+    pv = (739559892397, 1000076001443)
+    pu = (172946823661, 1000076001443)
 
-    assert pln == dec
+    e = encrypt(h, pv)
+    d = decrypt(e, pu)
+
+    assert d == h
 
     print("Assertion Passed")
