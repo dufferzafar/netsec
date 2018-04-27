@@ -11,8 +11,7 @@ class Client(object):
     def __init__(self):
         self.ca_addr = ('', 7070)
 
-        # TODO: String IDs
-        self.ID = 1
+        self.ID = "Shadab"
 
         # A key-pair generated using: rsa.generate_key_pair(1000037, 1000039)
         self.pub_key = (835209960655, 1000076001443)
@@ -125,7 +124,7 @@ class Client(object):
         print("\nSending request for a new certificate to CA")
 
         # TODO: Encrypt request with public key of CA
-        req = "REQ_CERT:%d|%d|%d" % (self.ID, *self.pub_key)
+        req = "REQ_CERT:%s|%d|%d" % (self.ID, *self.pub_key)
         self.ca_sock.send(req.encode())
 
         resp = self.ca_sock.recv(4096)

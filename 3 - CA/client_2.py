@@ -8,8 +8,7 @@ class Client(object):
         self.ca_addr = ('', 7070)
         self.client_addr = ('', 7171)
 
-        # TODO: String IDs
-        self.ID = 2
+        self.ID = "Nichit"
 
         # A key-pair generated using: rsa.generate_key_pair(1000037, 1000039)
         self.pub_key = (927326331365, 1000076001443)
@@ -68,21 +67,25 @@ class Client(object):
         #####################################################################
 
         # Client sends its key & certificate back
-        print("\n=================================\n")
-        print("> Client has sent its public key & certificate: \n")
 
         resp = self.client_sock.recv(4096)
         resp = resp.decode()
 
         if resp.startswith("CLIENT_KEY:"):
+
+            print("\n=================================\n")
+            print("> Client has sent its public key & certificate: \n")
+
             req = resp[len("CLIENT_KEY:"):]
 
             valid, self.client_id, self.client_pub_key = cert_is_valid(req, self.ca_pub_key)
 
             if not valid:
                 exit()
+
         else:
-            raise ValueError("Unexpected reply from client")
+            print("\nUnexpected reply from client")
+            exit()
 
         #####################################################################
 
@@ -107,7 +110,8 @@ class Client(object):
 
             print("Received msg from client:", req)
         else:
-            raise ValueError("Unexpected reply from client")
+            print("\nUnexpected reply from client")
+            exit()
 
         # print("Response from client:", resp)
 
@@ -119,7 +123,7 @@ class Client(object):
         print("\nSending request for a new certificate to CA")
 
         # TODO: Encrypt request with public key of CA
-        req = "REQ_CERT:%d|%d|%d" % (self.ID, *self.pub_key)
+        req = "REQ_CERT:%s|%d|%d" % (self.ID, *self.pub_key)
         self.ca_sock.send(req.encode())
 
         resp = self.ca_sock.recv(4096)
