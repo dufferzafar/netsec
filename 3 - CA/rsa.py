@@ -69,7 +69,7 @@ def encrypt(msg, key):
 
     cipher = [pow(p, k, n) for p in utils.str_to_ints(msg, nbytes)]
     cipher = utils.ints_to_str(cipher, nbytes + 1)
-    cipher = base64.b64encode(msg.encode()).decode()[:-2]
+    cipher = base64.b64encode(cipher.encode()).decode()
 
     return cipher
 
@@ -78,9 +78,9 @@ def decrypt(cipher, key):
     k, n = key
     nbytes = int(math.log(n, 2) // 8)
 
+    cipher = base64.b64decode(cipher).decode()
     plain = [pow(p, k, n) for p in utils.str_to_ints(cipher, nbytes + 1)]
     plain = utils.ints_to_str(plain, nbytes)
-    plain = base64.b64decode(cipher + "==").decode()
 
     return plain
 
