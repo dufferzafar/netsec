@@ -42,7 +42,7 @@ class CertificationAuthorityServer(object):
 
                     data = data.decode()
                     if data.startswith("REQ_CERT:"):
-                        req = data.lstrip("REQ_CERT:")
+                        req = data[len("REQ_CERT:"):]
 
                         # TODO: Decrypt request with private key of CA
 

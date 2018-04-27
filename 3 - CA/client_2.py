@@ -75,7 +75,7 @@ class Client(object):
         resp = resp.decode()
 
         if resp.startswith("CLIENT_KEY:"):
-            req = resp.lstrip("CLIENT_KEY:")
+            req = resp[len("CLIENT_KEY:"):]
 
             valid, self.client_id, self.client_pub_key = cert_is_valid(req, self.ca_pub_key)
 
@@ -101,7 +101,7 @@ class Client(object):
 
         # Client has sent its key back
         if resp.startswith("CLIENT_MSG:"):
-            req = resp.lstrip("CLIENT_MSG:")
+            req = resp[len("CLIENT_MSG:"):]
 
             # TODO: Double decryption of hello message
 

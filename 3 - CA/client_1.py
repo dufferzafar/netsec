@@ -81,7 +81,7 @@ class Client(object):
                     data = data.decode()
 
                     if data.startswith("CLIENT_KEY:"):
-                        req = data.lstrip("CLIENT_KEY:")
+                        req = data[len("CLIENT_KEY:"):]
 
                         print("\n=================================\n")
 
@@ -96,7 +96,7 @@ class Client(object):
                         response = "CLIENT_KEY:" + self.certificate
 
                     elif data.startswith("CLIENT_MSG:"):
-                        req = data.lstrip("CLIENT_MSG:")
+                        req = data[len("CLIENT_MSG:"):]
 
                         # TODO: Decrypt data with self.pvt_key
                         # TODO: Decrypt data with self.client_pub_key
