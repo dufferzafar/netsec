@@ -85,12 +85,13 @@ def decrypt(cipher, key):
     return plain
 
 
-if __name__ == '__main__':
+def _rsa_test_key_gen():
+    for _ in range(3):
+        pv, pu = generate_key_pair(1000037, 1000039)
+        print(pv, pu)
 
-    # for _ in range(3):
-    #     pv, pu = generate_key_pair(1000037, 1000039)
-    #     print(pv, pu)
 
+def _rsa_test_1():
     h = "c5801570ccb13da3093aeb275ec9a9866ed11ee724948fbc868e676c6139d96c"
     pv = (739559892397, 1000076001443)
     pu = (172946823661, 1000076001443)
@@ -100,4 +101,34 @@ if __name__ == '__main__':
 
     assert d == h
 
-    print("Assertion Passed")
+
+def _rsa_test_2():
+    h = "Hello, Shadab, " * 30
+
+    c1_pu = (835209960655, 1000076001443)
+    c1_pv = (656337451687, 1000076001443)
+
+    c2_pu = (927326331365, 1000076001443)
+    c2_pv = (765829640285, 1000076001443)
+
+    # C2 sends to C1
+    e = encrypt(h, c2_pv)
+    e = encrypt(e, c1_pu)
+
+    # C1 receives
+    d = decrypt(e, c1_pv)
+    d = decrypt(d, c2_pu)
+
+    # BUG: Look into why this is needed
+    d = d.replace("\x00", "")
+
+    assert d == h
+
+
+if __name__ == '__main__':
+
+    # _rsa_test_key_gen()
+
+    # _rsa_test_1()
+
+    _rsa_test_2()
