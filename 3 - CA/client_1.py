@@ -95,14 +95,20 @@ class Client(object):
                         response = "CLIENT_KEY:" + self.certificate
 
                     elif data.startswith("CLIENT_MSG:"):
-                        req = data[len("CLIENT_MSG:"):]
+                        msg = data[len("CLIENT_MSG:"):]
 
-                        # TODO: Decrypt data with self.pvt_key
-                        # TODO: Decrypt data with self.client_pub_key
+                        # Double decryption of hello message
+                        msg = rsa.decrypt(msg, self.pvt_key)
+                        msg = rsa.decrypt(msg, self.client_pub_key)
 
-                        print("Received msg from client:", req)
+                        print("Received msg from client:", msg)
 
-                        response = "CLIENT_MSG:" + "Hello, client " + str(self.client_id)
+                        # Double encryption of hello message
+                        msg = "Hello, " + str(self.client_id)
+                        msg = rsa.encrypt(msg, self.pvt_key)
+                        msg = rsa.encrypt(msg, self.client_pub_key)
+
+                        response = "CLIENT_MSG:" + msg
                     else:
                         response = "echo: " + data.decode()
 

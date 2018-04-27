@@ -1,4 +1,5 @@
 import socket
+import rsa
 
 from client_common import cert_is_valid, get_certificate
 
@@ -92,9 +93,12 @@ class Client(object):
         # Send hello msg to client
         print("\n=================================\n")
 
-        # TODO: Double encryption of hello message
+        # Double encryption of hello message
+        msg = "Hello, " + str(self.client_id)
+        msg = rsa.encrypt(msg, self.pvt_key)
+        msg = rsa.encrypt(msg, self.client_pub_key)
 
-        req = "CLIENT_MSG:" + "Hello, client " + str(self.client_id)
+        req = "CLIENT_MSG:" + msg
         self.client_sock.send(req.encode())
 
         #####################################################################
@@ -104,11 +108,13 @@ class Client(object):
 
         # Client has sent its key back
         if resp.startswith("CLIENT_MSG:"):
-            req = resp[len("CLIENT_MSG:"):]
+            msg = resp[len("CLIENT_MSG:"):]
 
-            # TODO: Double decryption of hello message
+            # # Double decryption of hello message
+            msg = rsa.decrypt(msg, self.pvt_key)
+            msg = rsa.decrypt(msg, self.client_pub_key)
 
-            print("Received msg from client:", req)
+            print("Received msg from client:", msg)
         else:
             print("\nUnexpected reply from client")
             exit()
