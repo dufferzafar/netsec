@@ -123,7 +123,7 @@ class Client(object):
         print("\nSending request for a new certificate to CA")
 
         # TODO: Encrypt request with public key of CA
-        req = "REQ_CERT:%s|%d|%d" % (self.ID, *self.pub_key)
+        req = "REQ_CERT:%s" % self.ID
         self.ca_sock.send(req.encode())
 
         resp = self.ca_sock.recv(4096)

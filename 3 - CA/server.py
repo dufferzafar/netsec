@@ -5,6 +5,8 @@ import hashlib
 
 import rsa
 
+from keys import pub_keys
+
 
 class CertificationAuthorityServer(object):
     def __init__(self):
@@ -42,9 +44,9 @@ class CertificationAuthorityServer(object):
 
                     data = data.decode()
                     if data.startswith("REQ_CERT:"):
-                        req = data[len("REQ_CERT:"):]
+                        user_id = data[len("REQ_CERT:"):]
 
-                        # TODO: Decrypt request with private key of CA
+                        req = "%s|%d|%d" % (user_id, *pub_keys[user_id])
 
                         print("> Received request for new certificate: ", req)
 

@@ -1,13 +1,6 @@
 
 # Public Keys of Clients
-pub_keys = [
-
-]
-
-# Private Keys of Clients
-pvt_keys = [
-
-]
-
-# Public & Private Key of Certification Authority
-server_pub_key, server_pvt_key = 0, 0
+pub_keys = {
+    "Shadab": (835209960655, 1000076001443),
+    "Nichit": (927326331365, 1000076001443),
+}
