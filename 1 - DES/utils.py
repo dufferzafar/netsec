@@ -42,7 +42,7 @@ def bits_to_hex(b):
     return "".join([hex(int("".join(byte), 2))[2:] for byte in nsplit(b, 4)])
 
 
-# TODO: Should this return a string or a list?
+# TODO Should this return a string or a list?
 def bits(x, size=8):
     """
     Return binary value of x as a string of given size.
@@ -70,7 +70,7 @@ def nsplit(s, n):
     """
     Split a string/list into a list of sublists each of size n.
     """
-    # NOTE: Subscripts don't raise IndexError to allow things like these.
+    # NOTE Subscripts don't raise IndexError to allow things like these.
     return [s[i:i + n] for i in range(0, len(s), n)]
 
 

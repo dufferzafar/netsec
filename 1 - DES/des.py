@@ -101,7 +101,7 @@ def des(text, key, typ="encrypt"):
         print(len(text))
         raise ValueError("text length should be a multiple of 8.")
 
-    # TODO: Add padding to data
+    # TODO Add padding to data
     text = utils.str_to_bits(text)
 
     # Generate round keys
@@ -111,7 +111,7 @@ def des(text, key, typ="encrypt"):
     cipher = []
 
     # Since each block is encrypted independently of other blocks, this is ECB mode
-    # TODO: Add support for other encryption modes: CBC etc.
+    # TODO Add support for other encryption modes: CBC etc.
 
     # Store outputs of each round
     # (used to verify that encryption & decryption are inverses of each other)
