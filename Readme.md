@@ -3,5 +3,6 @@
  
 Assignments of SIL 765 - Networks and System Security course at IIT Delhi taught by Prof. B.N. Jain.
 
-Assignment 1 - Implementation of DES
-Assignment 2 - Implementation of a Timestamp Authority
+* 1 - Data Encryption Standard
+* 2 - Timestamp Authority
+* 3 - Certification Authority
